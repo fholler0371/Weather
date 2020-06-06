@@ -29,5 +29,7 @@ class c_opencagedata():
 				self.valid = True
 			except:
 				self.valid = False
-			if not self.callback == None:
-				self.callback()
+		else:
+			self.valid = False
+		if not self.callback == None:
+			self.callback()
