@@ -1,4 +1,4 @@
 # Weather
 
-Lesen von öffentlicen und MQTT Wetterdaten
+Lesen von öffentlichen und MQTT Wetterdaten
 
