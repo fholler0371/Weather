@@ -15,24 +15,32 @@
     Version 1.0
 """
 
-from threading import Thread
-import requests
+import time
+import threading
+import sqlite3
+from datetime import datetime
 
-class th_http_async(Thread):
-	def __init__(self, url, callback = None):
-		Thread.__init__(self)
-		self.name = "http_async"
-		self.url = url
-		self.cb = callback
+class c_weather_db():
+	def __init__(self, dbPath, wbit):
+		self.wbit = wbit
+		self.timer = None
+		self.dbPath = dbPath
 
-	def run(self):
+	def start(self):
+		timeout = 300 - (int(time.time() % 300))
+		self.timer = threading.Timer(timeout, self.loop)
+		self.timer.start()
+
+	def loop(self):
+		file = self.dbPath+'/history-'+datetime.utcnow().strftime('%Y%m')+'.sqlite'
+		conn =  None
 		try:
-			r = requests.get(self.url)
-			if not None == self.cb:
-				if r.status_code == 200:
-					self.cb(r.content)
-				else:
-					self.cb(False)
+			conn = sqlite3.connect(file)
+			c = conn.cursor()
+			sql = "CREATE TABLE IF NOT EXISTS history (id integer PRIMARY KEY, time int, name text, value text);"
+			c.execute(sql)
+			print(sqlite.version)
+			conn.close()
 		except:
-			if not None == self.cb:
-				self.cb(False)
+			pass
+		print("loop")
