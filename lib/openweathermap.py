@@ -30,7 +30,7 @@ class c_openweathermap:
 		self.callback_newdata = None
 		self.running = False
 		self.timer = None
-		self.url = "https://api.openweathermap.org/data/2.5/onecall?"
+		self.url = "https://api.openweathermap.org/data/2.5/onecall?units=metric&lang=de&"
 		self.data = {"current":{}, "hourly":{}, "daily": {}}
 		self.refresh = 900
 		self.error_count = 0
