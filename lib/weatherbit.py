@@ -109,6 +109,7 @@ class c_weatherbit():
 			except:
 				pass
 	def loop(self):
+		print("loop")
 		if self.open == 0:
 			self.open = 3
 			http = http_async.th_http_async(self.url+'current'+self.get_params(), self.callback_current)
@@ -139,5 +140,6 @@ class c_weatherbit():
 						l += 1
 						timeout *= 2
 					timeout *= 60
+				print(timeout)
 				self.timer = threading.Timer(timeout, self.loop)
 				self.timer.start()
