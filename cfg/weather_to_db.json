@@ -1,1 +1,8 @@
-{"openweathermap": "api-key", "weatherbit": "api-key", "opencagedata": "api-key", "address": "Alexanderplatz 1, 10178 Berlin, Germanyany"}
+{"openweathermap": "api-key", 
+ "weatherbit": "api-key", 
+ "opencagedata": "api-key", 
+ "local": {"temp": "topic/TEMPERATURE",
+           "humidity": "topic/HUMIDITY",
+           "lux": "topic/LUX",
+           "host": "mqtt_host"},
+ "address": "Alexanderplatz 1, 10178 Berlin, Germanyany"}
