@@ -53,10 +53,6 @@ class weather_local:
 			if msg.topic == self.cfg["lux"]:
 				self.lux = json.loads(msg.payload.decode())["val"]
 				self.valid = True
-		print("Temp:", self.temp)
-		print("Humidity:", self.humidity)
-		print("Lux:", self.lux)
-		print("Valid:", self.valid)
 
 	def on_disconnect(client, userdata, rc):
 		if rc != 0:

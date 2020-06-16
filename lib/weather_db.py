@@ -21,9 +21,10 @@ import sqlite3
 from datetime import datetime
 
 class c_weather_db():
-	def __init__(self, dbPath, wbit, oweather):
+	def __init__(self, dbPath, wbit, oweather, wlocal):
 		self.wbit = wbit
 		self.oweather = oweather
+		self.wlocal = wlocal
 		self.timer = None
 		self.dbPath = dbPath
 		self.running = False
@@ -54,11 +55,25 @@ class c_weather_db():
 			record = c.fetchone()
 			if record:
 				last = record[0]
-			if self.wbit.valid:
+			hastemp = False
+			hashumidity = False
+			if self.wlocal != None and self.wlocal.valid:
+				sql = '''INSERT INTO history (time, name, value) VALUES(?,?,?) '''
+				if self.wlocal.temp != None:
+					c.execute(sql, (str(int(time.time())),"temperature", str(self.wlocal.temp)))
+					hastemp = True
+				if self.wlocal.humidity != None:
+					c.execute(sql, (str(int(time.time())),"humidity", str(self.wlocal.humidity)))
+					hashumidity = True
+				if self.wlocal.lux != None:
+					c.execute(sql, (str(int(time.time())),"lux", str(self.wlocal.lux)))
+				conn.commit()
+			if self.wbit != None and self.wbit.valid:
 				sql = '''INSERT INTO history (time, name, value) VALUES(?,?,?) '''
 				cur = self.wbit.data["current"]
 				if not (str(last) == str(cur["ts"])):
-					c.execute(sql, (cur["ts"],"humidity", str(cur["rh"])))
+					if not hashumidity:
+						c.execute(sql, (cur["ts"],"humidity", str(cur["rh"])))
 					c.execute(sql, (cur["ts"],"pressure", str(cur["pres"])))
 					c.execute(sql, (cur["ts"],"clouds", str(cur["clouds"])))
 					c.execute(sql, (cur["ts"],"solar_rad", str(cur["solar_rad"]))) #W/m*m
@@ -73,20 +88,23 @@ class c_weather_db():
 					c.execute(sql, (cur["ts"],"rain", str(cur["precip"])))
 					c.execute(sql, (cur["ts"],"uv_index", str(cur["uv"])))
 					c.execute(sql, (cur["ts"],"air_quality_index", str(cur["aqi"])))
-					c.execute(sql, (cur["ts"],"temperature", str(cur["temp"])))
+					if not hastemp:
+						c.execute(sql, (cur["ts"],"temperature", str(cur["temp"])))
 					c.execute(sql, (cur["ts"],"solar_evalation", str(cur["elev_angle"])))
 					c.execute(sql, (cur["ts"],"temperature_feel", str(cur["app_temp"])))
 					c.execute(sql, (cur["ts"],"description", str(cur["weather"]["description"])))
 					c.execute(sql, (cur["ts"],"icon", str(cur["weather"]["icon"])))
 					c.execute(sql, (cur["ts"],"code", str(cur["weather"]["code"])))
-			elif self.oweather.valid:
+			elif self.oweather != None and self.oweather.valid:
 				cur = self.oweather.data["current"]
 				if not (str(last) == str(cur["dt"])):
 					c.execute(sql, (cur["dt"],"sunrise", datetime.utcfromtimestamp(cur["sunrise"]).strftime('%H:%M')))
 					c.execute(sql, (cur["dt"],"sunset", datetime.utcfromtimestamp(cur["sunset"]).strftime('%H:%M')))
-					c.execute(sql, (cur["dt"],"temperature", str(cur["temp"])))
+					if not hastemp:
+						c.execute(sql, (cur["dt"],"temperature", str(cur["temp"])))
 					c.execute(sql, (cur["dt"],"temperature_feel", str(cur["feels_like"])))
-					c.execute(sql, (cur["dt"],"humidity", str(cur["humidity"])))
+					if not hashumidity:
+						c.execute(sql, (cur["dt"],"humidity", str(cur["humidity"])))
 					c.execute(sql, (cur["dt"],"pressure", str(cur["pressure"])))
 					c.execute(sql, (cur["dt"],"uv_index", str(cur["uvi"])))
 					c.execute(sql, (cur["dt"],"clouds", str(cur["clouds"])))

@@ -29,10 +29,12 @@ import opencagedata
 import weatherbit
 import openweathermap
 import weather_db
+import weather_local
 
 odata = None
 wbit = None
 oweather = None
+wlocal = None
 cfg = None
 db = None
 
@@ -89,8 +91,14 @@ def main():
 		oweather.long = cfg.data['geo']['lng']
 		oweather.start()
 
+	global wlocal
+	if "local" in cfg.data:
+		wlocal = weather_local.weather_local()
+		wlocal.cfg = cfg.data["local"]
+		wlocal.start()
+
 	global db
-	db = weather_db.c_weather_db(basepath+'/db', wbit, oweather)
+	db = weather_db.c_weather_db(basepath+'/db', wbit, oweather, wlocal)
 	db.start()
 
 	while True:
@@ -99,6 +107,8 @@ def main():
 		oweather.stop()
 	if not wbit == None:
 		wbit.stop()
+	if not wlocal == None:
+		wlocal.stop()
 	if not db == None:
 		db.stop()
 
